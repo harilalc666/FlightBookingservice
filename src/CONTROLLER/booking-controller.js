@@ -1,7 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
-
 const { BookingService } = require('../SERVICES/index');
-const { REMINDER_BINDING_KEY } = require('../config/serverconfig');
 
 const bookingService = new BookingService();
 
@@ -51,11 +49,48 @@ class BookingController {
     async create (req, res) {
         try {
             const response = await bookingService.createBooking(req.body);
-            console.log("FROM BOOKING CONTROLLER", response);
             return res.status(StatusCodes.OK).json({
                 message: 'Successfully completed booking',
                 success: true,
                 err: {},
+                data: response
+            })
+        } catch (error) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+                success: false,
+                err: error.explanation,
+                data: {}
+            });
+        }
+    }
+
+    async get (req, res) {
+        try {
+            const response = await bookingService.getBooking(req.params.id);
+            return res.status(StatusCodes.OK).json({
+                message: "Succesfully fetched the booking details",
+                success: true,
+                error: {},
+                data: response
+            })
+        } catch (error) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+                success: false,
+                err: error.explanation,
+                data: {}
+            });
+        }
+    }
+
+    async getAll (req, res) {
+        try {
+            const response = await bookingService.getAllBookings(req.query);
+            return res.status(StatusCodes.OK).json({
+                message: "Succesfully fetched all the booking details",
+                success: true,
+                error: {},
                 data: response
             })
         } catch (error) {

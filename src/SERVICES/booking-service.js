@@ -16,7 +16,7 @@ class BookingService {
         try {
         
             const flightId = data.FlightId;
-            const getFlightRequestURL = `${FLIGHT_SERVICE_PATH}/api/v1/flight/${flightId}`;
+            const getFlightRequestURL = `${FLIGHT_SERVICE_PATH}/flights/api/v1/flight/${flightId}`;
             const response = await axios.get(getFlightRequestURL);
             // console.log('After making axios request to flight search db',response.data.data);
             const flightData = response.data.data;
@@ -27,7 +27,7 @@ class BookingService {
             const totalCost = priceOfTheFlight*data.noOfSeats;
             const bookingPayload = {...data, totalCost};
             const booking = await this.bookingRepository.create(bookingPayload);
-            const updateFlightRequestURL = `${FLIGHT_SERVICE_PATH}/api/v1/flight/${booking.FlightId}`;
+            const updateFlightRequestURL = `${FLIGHT_SERVICE_PATH}/flights/api/v1/flight/${booking.FlightId}`;
             // console.log('After making axios request to flight search sb to get flight ID',updateFlightRequestURL);
             await axios.patch(updateFlightRequestURL, {totalSeats: flightData.totalSeats - booking.noOfSeats});
             const finalBooking = await this.bookingRepository.update(booking.id, {status: "Booked"});
@@ -61,6 +61,30 @@ class BookingService {
             }
             throw new ServiceError();
         }
+    }
+
+    async getBooking(data) {
+        try {
+            const result = await this.bookingRepository.get(data);
+            return result;
+        } catch (error) {
+            console.log(error);
+            if(error.name == 'RepositoryError' || error.name == 'ValidationError') {
+                throw error;
+            }
+            throw new ServiceError();
+        }
+    }
+
+    async getAllBookings(data) {
+        try {
+            const result = await this.bookingRepository.getAll(data);
+            return result;
+        }
+        catch (error) {
+            console.log(error);
+            throw new ServiceError();
+        }   
     }
 }
 

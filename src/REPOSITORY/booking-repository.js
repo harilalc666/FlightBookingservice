@@ -37,6 +37,43 @@ class BookingRepository {
                 StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
+
+    async get(bookingId) {
+        try {
+            const bookingdata = await Booking.findByPk(bookingId);
+            return bookingdata;
+        } catch (error) {
+            console.log(error);
+            throw{ error }
+        }
+    }
+
+    async getAll(filter){
+        try {
+            if(filter.FlightId){
+                const booking = await Booking.findAll({
+                    where:{
+                        FlightId : filter.FlightId
+                    }
+                })
+                return booking;
+            }
+            else if(filter.userId){
+                const booking = await Booking.findAll({
+                    where:{
+                        userId : filter.userId
+                    }
+                })
+                return booking;
+            }
+            const booking = await Booking.findAll();
+            return booking;
+        } catch (error) {
+            console.log("Something went wrong in repository");
+            throw{ error }
+        }
+    
+    }
 }
 
 module.exports = BookingRepository;
